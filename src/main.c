@@ -6,6 +6,7 @@
 #include <string.h>
 #include <model.h>
 
+//Struct used to track our settings which we modify with params
 typedef struct Settings {
     char *filename;
     double xoffset;
@@ -14,6 +15,9 @@ typedef struct Settings {
     double xtarget;
     double ytarget;
     double ztarget;
+    double xspin;
+    double yspin;
+    double zspin;
 } Settings;
 
 Settings default_settings();
@@ -23,16 +27,20 @@ void main(int argc, char* argv[]);
 
 Settings default_settings() {
     Settings s;
-    s.filename = "models/bunny.obj";
+    s.filename = "assets/bunny.obj";
     s.xoffset = 0;
     s.yoffset = 0;
     s.zoffset = 4;
     s.xtarget = 0;
     s.ytarget = 0;
     s.ztarget = 0;
+    s.xspin = 0;
+    s.yspin = 1;
+    s.zspin = 0;
     return s;
 }
 
+//Function to parse any command line arguments
 void parse_args(Settings *s, int argc, char** argv) {
     for(int i = 1; i < argc; i++) {
         if(strcmp(argv[i], "-file") == 0) {
@@ -50,6 +58,12 @@ void parse_args(Settings *s, int argc, char** argv) {
             s->ytarget = atof(strtok(NULL, ","));
             s->ztarget = atof(strtok(NULL, ","));
         }
+        else if(strcmp(argv[i], "-spin") == 0) {
+            char *token = strtok(argv[++i], ",");
+            s->xspin = atof(token);
+            s->yspin = atof(strtok(NULL, ","));
+            s->zspin = atof(strtok(NULL, ","));
+        }
         else {
             printf("Unrecongized parameter %s\n", argv[i]);
             exit(-1);
@@ -57,6 +71,7 @@ void parse_args(Settings *s, int argc, char** argv) {
     }
 }
 
+//Set up all of OpenGL's little settings
 void opengl_startup_chores(Settings s) {
     glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -105,7 +120,9 @@ void main(int argc, char* argv[]) {
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
-        glRotatef(1.0f, 0.f, 1.f, 0.f);
+        glRotatef(s.xspin, 1.f, 0.f, 0.f);
+        glRotatef(s.yspin, 0.f, 1.f, 0.f);
+        glRotatef(s.zspin, 0.f, 0.f, 1.f);
         draw_model(&m);
     }
 
