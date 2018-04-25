@@ -1,6 +1,7 @@
 SRC_DIR="src/"
 SRC_FILES="main.c model.c databuffers.c"
 FLAGS="-Iinc -g -o modelviewer"
+LIBS="-lglfw -lGL -lGLU"
 TARGETS=""
 
 for FILE in $SRC_FILES
@@ -9,4 +10,4 @@ do
 done
 
 echo $TARGETS
-gcc -g $FLAGS $TARGETS -lglfw -lGL -lGLU
+gcc $FLAGS $TARGETS $LIBS
