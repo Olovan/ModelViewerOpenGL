@@ -6,8 +6,13 @@
 
 void load_from_file(ModelData *m, char* file_path) {
     const int MAX_LINE_LENGTH = 256;
-    FILE *file = fopen(file_path, "r");
     char nextline[MAX_LINE_LENGTH];
+    FILE *file = fopen(file_path, "r");
+
+    if(file == NULL) {
+        printf("Could not open file %s\n", file_path);
+        exit(-1);
+    }
 
     while(fgets(nextline, MAX_LINE_LENGTH, file) != NULL) {
         char *token = strtok(nextline, " ");

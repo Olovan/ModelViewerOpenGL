@@ -25,6 +25,20 @@ void opengl_startup_chores(Settings);
 void parse_args(Settings *s, int argc, char** argv);
 void main(int argc, char* argv[]);
 
+char *help_message = 
+"\nModelviewer displays an OBJ file with OpenGL\n\n \
+        Usage: modelviewer {OPTIONS}\n\n\
+        OPTIONS:\n\
+            -file    -  Select obj file to view\n\
+            -offset  -  Set camera offset \n\
+            -target  -  Set coordinates that camera looks at\n\
+            -spin    -  Set how much the model should rotate along that axis every frame \n\
+            -help    -  Display this help message \n \
+            \n\
+        Example: \n\
+            modelviewer -file assets/bunny.obj -offset 0,2,4 -target 0,2,0 -spin 0,1,0\n";
+
+
 Settings default_settings() {
     Settings s;
     s.filename = "assets/bunny.obj";
@@ -64,6 +78,10 @@ void parse_args(Settings *s, int argc, char** argv) {
             s->yspin = atof(strtok(NULL, ","));
             s->zspin = atof(strtok(NULL, ","));
         }
+        else if(strcmp(argv[i], "-help") == 0) {
+            printf("%s\n", help_message);
+            exit(0);
+        }
         else {
             printf("Unrecongized parameter %s\n", argv[i]);
             exit(-1);
@@ -100,7 +118,7 @@ void main(int argc, char* argv[]) {
     Settings s = default_settings();
     parse_args(&s, argc, argv);
     ModelData m = create_empty_modeldata();
-    printf("%s\n", s.filename);
+    printf("Opening %s\n", s.filename);
     load_from_file(&m, s.filename);
     printf("Loaded %d vertices!\n", m.verts.size / 3);
     printf("Loaded %d faces!\n", m.index.size / 3);
