@@ -25,18 +25,26 @@ void opengl_startup_chores(Settings);
 void parse_args(Settings *s, int argc, char** argv);
 void main(int argc, char* argv[]);
 
-char *help_message = 
-"\nModelviewer displays an OBJ file with OpenGL\n\n \
-        Usage: modelviewer {OPTIONS}\n\n\
-        OPTIONS:\n\
-            -file    -  Select obj file to view\n\
-            -offset  -  Set camera offset \n\
-            -target  -  Set coordinates that camera looks at\n\
-            -spin    -  Set how much the model should rotate along that axis every frame \n\
-            -help    -  Display this help message \n \
-            \n\
-        Example: \n\
-            modelviewer -file assets/bunny.obj -offset 0,2,4 -target 0,2,0 -spin 0,1,0\n";
+char *help_message = "\
+modelviewer [OPTIONS...]\n\
+\n\
+Displays an OBJ file using OpenGL.\n\
+\n\
+Example:\n\
+  modelviewer -file assets/bunny.obj \\\n\
+              -offset 0,2,4 \\\n\
+              -target 0,2,0 \\\n\
+              -spin   0,1,0 \n\
+\n\
+Options:\n\
+  -file FILENAME    Select obj file to view\n\
+  -offset X,Y,Z     Set camera offset\n\
+  -target X,Y,Z     Set coordinates that camera looks at\n\
+  -spin X,Y,Z       Set model rotatation speed around each axis\n\
+\n\
+Commands:\n\
+  -help             Display this help message\n\
+";
 
 
 Settings default_settings() {
