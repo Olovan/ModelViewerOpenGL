@@ -112,13 +112,15 @@ void opengl_startup_chores(Settings s) {
     gluLookAt(s.xoffset, s.yoffset, s.zoffset, s.xtarget, s.ytarget, s.ztarget, 0.0, 1.0, 0.0);
     GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat ambient[] = {0.0f, 0.0f, 0.0f, 0.0f};
     GLfloat position[] = {0.0f, 5.0f, 0.0f, 0.0f};
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT0, GL_POSITION, position);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, (float[]){0.3f, 0.2f, 0.2f, 0.2f});
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, (float[]){0.8f, 0.3f, 0.3f, 1.0f});
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 120.0f);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, (float[]){0.3f, 0.2f, 0.2f, 0.4f});
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, (float[]){0.5f, 0.5f, 0.5f, 1.0f});
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
 }
 
 void main(int argc, char* argv[]) {
