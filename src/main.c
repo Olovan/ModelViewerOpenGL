@@ -123,6 +123,10 @@ void opengl_startup_chores(Settings s) {
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
 }
 
+void framebuffer_size_callback(GLFWwindow* win, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 void main(int argc, char* argv[]) {
     char *objfile = "models/bunny.obj";
     Settings s = default_settings();
@@ -141,6 +145,7 @@ void main(int argc, char* argv[]) {
     GLFWwindow* win;
     win = glfwCreateWindow(640, 480, "Test", NULL, NULL);
     glfwMakeContextCurrent(win);
+    glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
     opengl_startup_chores(s);
 
     while(!glfwWindowShouldClose(win)) {
