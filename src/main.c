@@ -148,15 +148,23 @@ void main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
     opengl_startup_chores(s);
 
+    double xangle=0,yangle=0,zangle=0;
+
     while(!glfwWindowShouldClose(win)) {
         glfwSwapBuffers(win);
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
-        glRotatef(s.xspin, 1.f, 0.f, 0.f);
-        glRotatef(s.yspin, 0.f, 1.f, 0.f);
-        glRotatef(s.zspin, 0.f, 0.f, 1.f);
+
+        xangle += s.xspin;
+        yangle += s.yspin;
+        zangle += s.zspin;
+        glPushMatrix();
+        glRotatef(xangle, 1.f, 0.f, 0.f);
+        glRotatef(yangle, 0.f, 1.f, 0.f);
+        glRotatef(zangle, 0.f, 0.f, 1.f);
         draw_model(&m);
+        glPopMatrix();
     }
 
     glfwTerminate();
