@@ -1,7 +1,7 @@
 SRC_DIR="src/"
 SRC_FILES="main.c model.c databuffers.c"
 FLAGS="-Iinc -g -o modelviewer"
-LIBS="-lglfw -lGL -lGLU"
+LIBS="-lglfw -lGL -lGLU -lm"
 TARGETS=""
 
 for FILE in $SRC_FILES

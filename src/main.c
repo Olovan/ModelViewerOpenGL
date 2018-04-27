@@ -4,26 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <stdbool.h>
 #include <model.h>
 
-//Struct used to track our settings which we modify with params
-typedef struct Settings {
-    char *filename;
-    double xoffset;
-    double yoffset;
-    double zoffset;
-    double xtarget;
-    double ytarget;
-    double ztarget;
-    double xspin;
-    double yspin;
-    double zspin;
-} Settings;
-
-Settings default_settings();
-void opengl_startup_chores(Settings);
-void parse_args(Settings *s, int argc, char** argv);
-void main(int argc, char* argv[]);
+#define FAR_PLANE 100.0
 
 char *help_message = "\
 modelviewer [OPTIONS...]\n\
@@ -47,18 +32,34 @@ Commands:\n\
 ";
 
 
+//Struct used to track our settings which we modify with params
+typedef struct Settings {
+    char *filename;
+    bool lighting;
+    double xoffset;
+    double yoffset;
+    double zoffset;
+    double xtarget;
+    double ytarget;
+    double ztarget;
+    double xspin;
+    double yspin;
+    double zspin;
+} Settings;
+
 Settings default_settings() {
     Settings s;
     s.filename = "assets/bunny.obj";
+    s.lighting = true;
     s.xoffset = 0;
     s.yoffset = 0;
     s.zoffset = 4;
     s.xtarget = 0;
     s.ytarget = 0;
     s.ztarget = 0;
-    s.xspin = 0;
+    s.xspin = 0.3;
     s.yspin = 1;
-    s.zspin = 0;
+    s.zspin = 0.7;
     return s;
 }
 
@@ -86,6 +87,9 @@ void parse_args(Settings *s, int argc, char** argv) {
             s->yspin = atof(strtok(NULL, ","));
             s->zspin = atof(strtok(NULL, ","));
         }
+        else if(strcmp(argv[i], "-nolight") == 0) {
+            s->lighting = false;
+        }
         else if(strcmp(argv[i], "-help") == 0) {
             printf("%s\n", help_message);
             exit(0);
@@ -99,17 +103,26 @@ void parse_args(Settings *s, int argc, char** argv) {
 
 //Set up all of OpenGL's little settings
 void opengl_startup_chores(Settings s) {
-    glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+    //Turn on the relevant features
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_ALPHA_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    if(s.lighting) {
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+    }
+
+    //Set background color to grey
+    glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+
+    //Set up rendering matrices
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(90.0, 1.6, 0.01, 20.0);
+    gluPerspective(90.0, 1.6, 0.01, FAR_PLANE);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(s.xoffset, s.yoffset, s.zoffset, s.xtarget, s.ytarget, s.ztarget, 0.0, 1.0, 0.0);
+
+    //Lighting Settings
     GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat ambient[] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -128,37 +141,40 @@ void framebuffer_size_callback(GLFWwindow* win, int width, int height) {
 }
 
 void main(int argc, char* argv[]) {
-    char *objfile = "models/bunny.obj";
+
+    //Parse Arguments and Load Model
     Settings s = default_settings();
     parse_args(&s, argc, argv);
     ModelData m = create_empty_modeldata();
-    printf("Opening %s\n", s.filename);
+    printf("Opening %s\n", s.filename);                 //DEBUG
     load_from_file(&m, s.filename);
-    printf("Loaded %d vertices!\n", m.verts.size / 3);
-    printf("Loaded %d faces!\n", m.index.size / 3);
-    printf("Loaded %d normals!\n", m.normal.size / 3);
+    printf("Loaded %d vertices!\n", m.verts.size / 3);  //DEBUG
+    printf("Loaded %d faces!\n", m.index.size / 3);     //DEBUG
+    printf("Loaded %d normals!\n", m.normal.size / 3);  //DEBUG
+
+    //Open Window and get it ready to render
     if(!glfwInit()) {
         printf("GLFW FAILED TO LOAD!\n");
         exit(-1);
     }
-
     GLFWwindow* win;
-    win = glfwCreateWindow(640, 480, "Test", NULL, NULL);
+    win = glfwCreateWindow(1000, 625, "Test", NULL, NULL);
     glfwMakeContextCurrent(win);
     glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
     opengl_startup_chores(s);
 
     double xangle=0,yangle=0,zangle=0;
 
+    //Render Loop
     while(!glfwWindowShouldClose(win)) {
         glfwSwapBuffers(win);
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        xangle += s.xspin;
-        yangle += s.yspin;
-        zangle += s.zspin;
+        xangle = fmod((xangle + s.xspin) ,360.0);
+        yangle = fmod((yangle + s.yspin) ,360.0);
+        zangle = fmod((zangle + s.zspin) ,360.0);
         glPushMatrix();
         glRotatef(xangle, 1.f, 0.f, 0.f);
         glRotatef(yangle, 0.f, 1.f, 0.f);
@@ -167,5 +183,6 @@ void main(int argc, char* argv[]) {
         glPopMatrix();
     }
 
+    //Shutdown and Cleanup
     glfwTerminate();
 }
