@@ -1,3 +1,4 @@
+#!/bin/bash
 SRC_DIR="src/"
 SRC_FILES="main.c model.c databuffers.c"
 FLAGS="-Iinc -g -o modelviewer"
