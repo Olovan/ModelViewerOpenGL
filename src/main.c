@@ -136,8 +136,14 @@ void opengl_startup_chores(Settings s) {
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
 }
 
-void framebuffer_size_callback(GLFWwindow* win, int width, int height) {
+//Function called every time the window is resized
+void window_size_callback(GLFWwindow* win, int width, int height) {
+    double aspect = (double)width/height;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(90.0, aspect, 0.01, FAR_PLANE);
     glViewport(0, 0, width, height);
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void main(int argc, char* argv[]) {
@@ -160,7 +166,7 @@ void main(int argc, char* argv[]) {
     GLFWwindow* win;
     win = glfwCreateWindow(1000, 625, "Test", NULL, NULL);
     glfwMakeContextCurrent(win);
-    glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
+    glfwSetWindowSizeCallback(win, window_size_callback);
     opengl_startup_chores(s);
 
     double xangle=0,yangle=0,zangle=0;

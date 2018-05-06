@@ -4,6 +4,10 @@
 #include <GL/gl.h>
 #include <model.h>
 
+/***********************************************************************
+ * Loads model information from OBJ file and saves the information
+ * to the included ModelData object.
+ * *********************************************************************/
 void load_from_file(ModelData *m, char* file_path) {
     const int MAX_LINE_LENGTH = 256;
     char nextline[MAX_LINE_LENGTH];
@@ -30,7 +34,6 @@ void load_from_file(ModelData *m, char* file_path) {
             append_to_charbuffer(&m->color, 60); //G
             append_to_charbuffer(&m->color, 60); //B
         } else if(strcmp(token, "f") == 0) {
-            //TODO Implement loading faces
             int x, y, z;  //Index numbers for vertices
             x = atoi(strtok(NULL, " "));
             y = atoi(strtok(NULL, " "));
@@ -61,6 +64,9 @@ void load_from_file(ModelData *m, char* file_path) {
     }
 }
 
+/****************************************************************
+ * Initializer for the ModelData struct
+ * **************************************************************/
 ModelData create_empty_modeldata() {
     ModelData m;
     m.verts.size = 0;
@@ -78,6 +84,9 @@ ModelData create_empty_modeldata() {
     return m;
 }
 
+/**************************************************************
+ * Renders model to current OpenGL Context
+ * ************************************************************/
 void draw_model(ModelData *m) {
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
